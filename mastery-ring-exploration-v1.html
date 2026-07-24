@@ -1,0 +1,276 @@
+<title>Mastery ring — internalization exploration</title>
+<style>
+  :root{
+    --bg:#F4EEDF; --panel:#FCFAF2; --panel-2:#F0E9D6;
+    --ink:#2A2620; --muted:#7C7260; --faint:#A79C86; --line:#DCD1B6;
+    --gold:#B88A2E; --gold-bright:#D9AE47; --green:#4E8368;
+    --amber:#C98A3A; --bronze:#A87C46; --silver:#9BA0AB;
+    --ring-track:#DCD1B6;
+    --shadow:0 1px 2px rgba(42,38,32,.06),0 8px 26px rgba(42,38,32,.07);
+  }
+  :root{ --faint:#A79C86; }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --bg:#10141D; --panel:#191F2C; --panel-2:#141A26;
+      --ink:#ECE5D4; --muted:#948B78; --faint:#6C7488; --line:#303A4C;
+      --gold:#D9AE47; --gold-bright:#F0CC6A; --green:#5FA07E;
+      --amber:#E0A24E; --bronze:#C29A63; --silver:#AEB4C0;
+      --ring-track:#2C3549;
+      --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.35);
+    }
+    :root{ --faint:#6C7488; }
+  }
+  :root[data-theme="light"]{
+    --bg:#F4EEDF; --panel:#FCFAF2; --panel-2:#F0E9D6;
+    --ink:#2A2620; --muted:#7C7260; --faint:#A79C86; --line:#DCD1B6;
+    --gold:#B88A2E; --gold-bright:#D9AE47; --green:#4E8368;
+    --amber:#C98A3A; --bronze:#A87C46; --silver:#9BA0AB; --ring-track:#DCD1B6;
+  }
+  :root[data-theme="dark"]{
+    --bg:#10141D; --panel:#191F2C; --panel-2:#141A26;
+    --ink:#ECE5D4; --muted:#948B78; --faint:#6C7488; --line:#303A4C;
+    --gold:#D9AE47; --gold-bright:#F0CC6A; --green:#5FA07E;
+    --amber:#E0A24E; --bronze:#C29A63; --silver:#AEB4C0; --ring-track:#2C3549;
+  }
+
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    line-height:1.6; -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:920px; margin:0 auto; padding:56px 22px 96px}
+  .serif{font-family:Georgia,"Times New Roman",serif}
+
+  .eyebrow{font-size:.72rem; letter-spacing:.16em; text-transform:uppercase; color:var(--gold); font-weight:600}
+  h1{font-family:Georgia,serif; font-weight:600; font-size:clamp(2rem,5vw,3rem); line-height:1.08; margin:.3em 0 .2em; text-wrap:balance; letter-spacing:-.01em}
+  .lede{font-size:1.1rem; color:var(--muted); max-width:60ch; margin:.4em 0 0}
+  h2{font-family:Georgia,serif; font-weight:600; font-size:1.55rem; margin:0 0 .1em; letter-spacing:-.01em}
+  h3{font-family:Georgia,serif; font-weight:600; font-size:1.12rem; margin:0}
+  p{margin:.6em 0}
+  section{margin-top:56px}
+  .sub{color:var(--muted)}
+  .hair{height:1px; background:var(--line); border:0; margin:0}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:.86em; background:var(--panel-2); padding:.08em .38em; border-radius:5px; border:1px solid var(--line)}
+
+  /* tier table */
+  .tablewrap{overflow-x:auto; border:1px solid var(--line); border-radius:14px; background:var(--panel); box-shadow:var(--shadow)}
+  table{border-collapse:collapse; width:100%; min-width:520px; font-size:.95rem}
+  th,td{text-align:left; padding:13px 16px; border-bottom:1px solid var(--line); vertical-align:top}
+  tr:last-child td{border-bottom:0}
+  thead th{font-size:.72rem; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); font-weight:600}
+  .tier-id{font-family:Georgia,serif; font-weight:600; color:var(--gold); white-space:nowrap}
+  td.name{font-weight:600}
+  tr.fill td.name{color:var(--gold)}
+  tr.base td .tag{color:var(--green)}
+
+  /* proposal cards */
+  .plate{background:var(--panel); border:1px solid var(--line); border-radius:18px; padding:26px 26px 30px; box-shadow:var(--shadow); margin-top:22px}
+  .plate-head{display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; margin-bottom:4px}
+  .badge{font-size:.7rem; letter-spacing:.12em; text-transform:uppercase; font-weight:700; color:var(--bg); background:var(--gold); padding:3px 9px; border-radius:999px}
+  .rec .badge{background:var(--green)}
+
+  .grid{display:flex; gap:10px; flex-wrap:wrap; margin-top:20px}
+  figure{margin:0; flex:1 1 120px; min-width:110px; background:var(--panel-2); border:1px solid var(--line); border-radius:12px; padding:14px 8px 12px; text-align:center}
+  figure svg{display:block; margin:0 auto 8px}
+  .st-name{font-size:.82rem; font-weight:600}
+  .st-note{font-size:.7rem; color:var(--muted); line-height:1.35; margin-top:2px}
+
+  /* inline sample row */
+  .versrow{display:flex; align-items:center; gap:12px; background:var(--panel-2); border:1px solid var(--line); border-radius:10px; padding:10px 14px; margin-top:16px}
+  .versrow .ref{font-family:Georgia,serif; color:var(--gold); font-size:.8rem; min-width:34px}
+  .versrow .txt{flex:1; font-family:Georgia,serif; font-size:.94rem; color:var(--ink)}
+  .versrow svg{flex:0 0 auto}
+
+  .pros{display:grid; grid-template-columns:1fr 1fr; gap:8px 22px; margin-top:18px; font-size:.9rem}
+  @media(max-width:560px){ .pros{grid-template-columns:1fr} }
+  .pros .h{font-size:.7rem; letter-spacing:.1em; text-transform:uppercase; font-weight:700; margin-bottom:2px}
+  .pros ul{margin:.1em 0; padding-left:1.1em}
+  .pros li{margin:.15em 0}
+  .pro .h{color:var(--green)} .con .h{color:var(--amber)}
+
+  /* legend key */
+  .key{display:flex; gap:18px 26px; flex-wrap:wrap; margin-top:14px; font-size:.86rem}
+  .key .k{display:flex; align-items:center; gap:8px}
+  .key .dot{width:14px; height:14px; border-radius:50%; flex:0 0 auto}
+
+  .ring.glow{filter:drop-shadow(0 0 3px var(--gold-bright))}
+
+  .callout{border-left:3px solid var(--gold); background:var(--panel); border-radius:0 12px 12px 0; padding:16px 20px; margin-top:20px}
+  .rec-final{background:linear-gradient(180deg,var(--panel),var(--panel-2)); border:1px solid var(--line); border-radius:18px; padding:26px; box-shadow:var(--shadow)}
+  .reg-grid{display:flex; gap:14px; flex-wrap:wrap; margin-top:18px}
+  .reg-grid figure{flex:1 1 150px}
+  .steps{counter-reset:s; list-style:none; padding:0; margin:16px 0 0}
+  .steps li{counter-increment:s; position:relative; padding:6px 0 6px 40px; border-bottom:1px solid var(--line)}
+  .steps li:last-child{border-bottom:0}
+  .steps li::before{content:counter(s); position:absolute; left:0; top:6px; width:26px; height:26px; border-radius:50%; background:var(--panel-2); border:1px solid var(--line); color:var(--gold); font-family:Georgia,serif; font-weight:600; display:grid; place-items:center; font-size:.8rem}
+  .foot{margin-top:60px; color:var(--faint); font-size:.82rem; text-align:center}
+  a{color:var(--gold)}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Versekin · mastery ring study</div>
+    <h1 class="serif">How deep does the inner ring go?</h1>
+    <p class="lede">The shipped ring shows two axes — familiarization outside, internalization inside. This explores how many <em>levels</em> internalization really has, whether to split it, and how an honest missed-recall should read.</p>
+  </header>
+
+  <section>
+    <h2 class="serif">The levels of internalization</h2>
+    <p class="sub">From the #211 model. Five tiers exist, but the inner ring only lives <em>above</em> the memorized line — so it has <strong>three fillable levels</strong>, one mirror of each familiarization stage outside it.</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Tier</th><th>Name</th><th>Earned by</th><th>Ring</th></tr></thead>
+        <tbody>
+          <tr><td class="tier-id">I0</td><td class="name">Learning</td><td>not yet recalled from a blank page</td><td class="sub">outer only</td></tr>
+          <tr class="base"><td class="tier-id">I1</td><td class="name"><span class="tag">Memorized</span></td><td>familiarization complete — the two axes meet here</td><td class="sub">inner = empty</td></tr>
+          <tr class="fill"><td class="tier-id">I2</td><td class="name">Retained</td><td>2 clean <strong>first-try</strong> reviews (no retry)</td><td class="sub">seg 1</td></tr>
+          <tr class="fill"><td class="tier-id">I3</td><td class="name">Mastered</td><td>reached the top 60-day interval, streak intact</td><td class="sub">seg 2</td></tr>
+          <tr class="fill"><td class="tier-id">I4</td><td class="name">Engraved</td><td>top interval <strong>and</strong> a clean first-try streak ≥ 5</td><td class="sub">seg 3</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout">
+      <strong>The hinge for a third ring:</strong> I2/I3/I4 are each gated by <em>two independent signals</em> — a clean <strong>first-try streak</strong> (accuracy) and the <strong>spaced-review interval</strong> reached (durability). They diverge exactly on the honest dimension: you can keep every review on schedule via retries yet rarely nail it first-try. That divergence is what a third ring can make visible.
+    </div>
+  </section>
+
+  <section>
+    <h2 class="serif">Three ways to draw it</h2>
+    <p class="sub">Each rendered live below, across the five states. Outer ring = familiarization (gold filling, green when memorized). Read left → right as the verse deepens.</p>
+
+    <div class="key" id="key"></div>
+
+    <!-- A -->
+    <div class="plate">
+      <div class="plate-head"><span class="badge">Option A</span><h3 class="serif">Two rings — inner split into 3 tiers</h3></div>
+      <p class="sub">The straight answer to your first question. Inner ring becomes three segments (I2·I3·I4), a clean mirror of the three outer stages. One internalization axis, one meeting point.</p>
+      <div class="grid" data-render="A"></div>
+      <div class="versrow"><span class="ref">Php 1:6</span><span class="txt">being confident of this very thing…</span><span data-inline="A"></span></div>
+      <div class="pros">
+        <div class="pro"><div class="h">Strength</div><ul><li>Perfectly symmetric — 3 out, 3 in</li><li>Legible at inline row size</li><li>Smallest build on top of what shipped</li></ul></div>
+        <div class="con"><div class="h">Cost</div><ul><li>Hides <em>why</em> a tier was reached — streak vs. interval collapse into one arc</li></ul></div>
+      </div>
+    </div>
+
+    <!-- B -->
+    <div class="plate rec">
+      <div class="plate-head"><span class="badge">Option B · recommended</span><h3 class="serif">Three rings — internalization split into Retention + Durability</h3></div>
+      <p class="sub">Decomposes internalization into its two real inputs. <strong>Middle = Retention</strong> (clean first-try streak, toward 5). <strong>Inner = Durability</strong> (how far the review interval has stretched, 1&nbsp;day → 60). All three full = engraved.</p>
+      <div class="grid" data-render="B"></div>
+      <div class="versrow"><span class="ref">Php 1:6</span><span class="txt">being confident of this very thing…</span><span data-inline="B"></span></div>
+      <div class="pros">
+        <div class="pro"><div class="h">Strength</div><ul><li>Shows the <em>why</em>: high durability + low retention is visible at a glance</li><li>Regression reads honestly (next section)</li><li>Grounded in storage-vs-retrieval strength (M5)</li></ul></div>
+        <div class="con"><div class="h">Cost</div><ul><li>Three thin concentric strokes get tight below ~28px — wants a larger detail view</li><li>More to build &amp; explain</li></ul></div>
+      </div>
+    </div>
+
+    <!-- C -->
+    <div class="plate">
+      <div class="plate-head"><span class="badge">Option C</span><h3 class="serif">Two rings + a gilded core</h3></div>
+      <p class="sub">A compromise. Outer familiarization, inner <strong>durability</strong> arc, and the <strong>retention tier</strong> collapsed into a single centre gem — bronze (Retained) · silver (Mastered) · gold (Engraved).</p>
+      <div class="grid" data-render="C"></div>
+      <div class="versrow"><span class="ref">Php 1:6</span><span class="txt">being confident of this very thing…</span><span data-inline="C"></span></div>
+      <div class="pros">
+        <div class="pro"><div class="h">Strength</div><ul><li>Three signals, only two rings — stays inline-legible</li><li>The gem is a satisfying prestige marker</li></ul></div>
+        <div class="con"><div class="h">Cost</div><ul><li>The core is a discrete jump, not a fill — less sense of “nearly there”</li><li>Colour-coded gem leans on hue alone</li></ul></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="serif">Your honest-regression case</h2>
+    <p class="sub">“At level 2, a missed first-try should affect the ring.” Here is the exact state — <code>stage 3, ri 5, streak reset to 0</code> — drawn three ways. This is where Option B earns its extra ring.</p>
+    <div class="reg-grid" id="regrid"></div>
+    <div class="callout" style="margin-top:22px">
+      In <strong>A</strong> and <strong>C</strong> a missed first-try dims the whole internalization inner ring / core back toward Memorized — truthful, but it reads as “you lost it.” In <strong>B</strong> only the <em>Retention</em> ring empties; the <em>Durability</em> ring stays nearly full — “you’ve kept it on schedule; your first-try streak just reset.” That’s the M5 framing #211 insists on: <em>dormant, not lost</em>. The earned peak (<code>itierPeak</code>) and any badge never regress regardless.
+    </div>
+  </section>
+
+  <section>
+    <h2 class="serif">Recommendation</h2>
+    <div class="rec-final">
+      <p style="margin-top:0"><strong>Go with B, rendered at two sizes.</strong> The three-ring split is the only option that answers all three of your questions at once — it has the three levels, it segments them, and the missed-first-try lands on the right ring without reading as loss.</p>
+      <p>The one real cost is inline legibility. Resolve it the way the app already handles the book map: a <strong>compact form in the verse row</strong> (outer + a single combined internalization arc, ~26px) that <strong>expands to the full three-ring detail</strong> on tap / in Review / on Progress — where there’s room for the Retention and Durability rings to be read separately. Same data, two densities.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="serif">What building it takes</h2>
+    <p class="sub">All specified in #211 — the ring is the display end of the real <code>itier</code> model, which the shipped <code>ri</code>-proxy can’t express (it has no notion of a <em>clean first-try</em> streak).</p>
+    <ol class="steps">
+      <li><strong>Per-verse state</strong> — add <code>itier</code>, <code>itierPeak</code> (never decreases), <code>cleanStreak</code>. Migration derives them from existing <code>stage</code>/<code>ri</code> on load.</li>
+      <li><strong>First-try capture</strong> — <code>session.js</code> records the accuracy of the <em>first</em> recall attempt before any “try again”; only that advances or resets <code>cleanStreak</code>.</li>
+      <li><strong>Pure tier functions</strong> in <code>engine.js</code> (testable core) computing I0–I4 from <code>{stage, cleanStreak, ri}</code>.</li>
+      <li><strong>Ring renderer</strong> — replace the single inner arc with Retention + Durability; compact vs. detail sizes.</li>
+      <li><strong>Sync</strong> — the new fields ride the existing per-verse last-write-wins; no new merge rule.</li>
+    </ol>
+  </section>
+
+  <p class="foot">Live SVG — resize or toggle your theme to test both grounds. Rendering mirrors the app’s <code>masteryRing</code>.</p>
+</div>
+
+<script>
+(function(){
+  const G=(c)=>getComputedStyle(document.documentElement).getPropertyValue(c).trim();
+  function P(cx,cy,r,deg){const a=(deg-90)*Math.PI/180;return [cx+r*Math.cos(a), cy+r*Math.sin(a)];}
+  function arc(cx,cy,r,a0,a1){const [x0,y0]=P(cx,cy,r,a0),[x1,y1]=P(cx,cy,r,a1);const lg=(a1-a0)>180?1:0;
+    return `M${x0.toFixed(2)} ${y0.toFixed(2)} A${r} ${r} 0 ${lg} 1 ${x1.toFixed(2)} ${y1.toFixed(2)}`;}
+  function segRing(cx,r,w,n,gap,colorFn){let s='';for(let i=0;i<n;i++){
+    const a0=i*(360/n)+gap/2,a1=(i+1)*(360/n)-gap/2,c=colorFn(i);
+    s+=`<path d="${arc(cx,cx,r,a0,a1)}" stroke="${c||'var(--ring-track)'}" stroke-width="${w}" fill="none" stroke-linecap="round"/>`;}
+    return s;}
+  function arcRing(cx,r,w,frac,color){const circ=2*Math.PI*r;
+    let s=`<circle cx="${cx}" cy="${cx}" r="${r}" stroke="var(--ring-track)" stroke-width="${w}" fill="none"/>`;
+    if(frac>0)s+=`<circle cx="${cx}" cy="${cx}" r="${r}" stroke="${color}" stroke-width="${w}" fill="none" stroke-linecap="round" stroke-dasharray="${(frac*circ).toFixed(2)} ${circ.toFixed(2)}" transform="rotate(-90 ${cx} ${cx})"/>`;
+    return s;}
+  const tier=s=>{if(s.stage<3)return 0;let t=1;if(s.streak>=2)t=2;if(s.ri>=6&&s.streak>=2)t=3;if(s.ri>=6&&s.streak>=5)t=4;return t;};
+  const fam=(s,i)=> s.stage>=3 ? 'var(--green)' : (s.stage>=i+1?'var(--gold)':null);
+  const wrap=(inner,S,glow)=>`<svg class="ring${glow?' glow':''}" width="${S}" height="${S}" viewBox="0 0 ${S} ${S}" role="img">${inner}</svg>`;
+
+  function ringA(s,S){const cx=S/2,w=S*0.115,r1=S/2-w*0.7,r2=r1-w*1.75,t=tier(s);
+    let g=segRing(cx,r1,w,3,22,i=>fam(s,i));
+    g+=segRing(cx,r2,w*0.82,3,26,i=> t>=i+2 ? (t>=4&&i===2?'var(--gold-bright)':'var(--gold)') : null);
+    return wrap(g,S,t>=4);}
+  function ringB(s,S){const cx=S/2,w=S*0.088,r1=S/2-w*0.7,r2=r1-w*1.55,r3=r2-w*1.55,t=tier(s),mem=s.stage>=3;
+    let g=segRing(cx,r1,w,3,22,i=>fam(s,i));
+    g+=arcRing(cx,r2,w*0.9,mem?Math.min(s.streak,5)/5:0,'var(--gold)');
+    g+=arcRing(cx,r3,w*0.9,mem?Math.min(s.ri,6)/6:0,'var(--amber)');
+    return wrap(g,S,t>=4);}
+  function ringC(s,S){const cx=S/2,w=S*0.11,r1=S/2-w*0.7,r2=r1-w*1.7,t=tier(s),mem=s.stage>=3;
+    let g=segRing(cx,r1,w,3,22,i=>fam(s,i));
+    g+=arcRing(cx,r2,w*0.9,mem?Math.min(s.ri,6)/6:0,'var(--amber)');
+    const col=t>=4?'var(--gold-bright)':t>=3?'var(--silver)':t>=2?'var(--bronze)':'transparent';
+    g+=`<circle cx="${cx}" cy="${cx}" r="${S*0.115}" fill="${col}" stroke="${t>=2?'none':'var(--ring-track)'}" stroke-width="1.4"/>`;
+    return wrap(g,S,t>=4);}
+  const R={A:ringA,B:ringB,C:ringC};
+
+  const STATES=[
+    {k:'Learning', s:{stage:2,streak:0,ri:0}, n:'stage 2 · not yet memorized'},
+    {k:'Memorized', s:{stage:3,streak:0,ri:0}, n:'I1 · axes meet'},
+    {k:'Retained', s:{stage:3,streak:2,ri:2}, n:'I2 · 2 clean first-tries'},
+    {k:'Mastered', s:{stage:3,streak:3,ri:6}, n:'I3 · top interval'},
+    {k:'Engraved', s:{stage:3,streak:5,ri:6}, n:'I4 · streak ≥ 5'},
+  ];
+  const REG={s:{stage:3,streak:0,ri:5}};
+
+  function draw(){
+    document.querySelectorAll('[data-render]').forEach(el=>{
+      const fn=R[el.dataset.render];
+      el.innerHTML=STATES.map(st=>`<figure>${fn(st.s,76)}<div class="st-name">${st.k}</div><div class="st-note">${st.n}</div></figure>`).join('');
+    });
+    document.querySelectorAll('[data-inline]').forEach(el=>{ el.innerHTML=R[el.dataset.inline](STATES[3].s,26); });
+    const rg=document.getElementById('regrid');
+    rg.innerHTML=['A','B','C'].map(k=>`<figure>${R[k](REG.s,90)}<div class="st-name">Option ${k}</div><div class="st-note">${k==='B'?'retention empties · durability holds':'internalization dims to I1'}</div></figure>`).join('');
+    const key=document.getElementById('key');
+    key.innerHTML=[
+      ['var(--green)','Memorized (familiarization)'],
+      ['var(--gold)','Retention · first-try streak'],
+      ['var(--amber)','Durability · review interval'],
+    ].map(([c,l])=>`<span class="k"><span class="dot" style="background:${c}"></span>${l}</span>`).join('');
+  }
+  draw();
+  // redraw on theme toggle so var() colors re-resolve crisply (they cascade anyway, but keeps SVG glow honest)
+  new MutationObserver(draw).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+})();
+</script>
