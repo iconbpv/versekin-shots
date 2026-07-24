@@ -1,0 +1,234 @@
+<title>Mastery ring — ring + orb</title>
+<style>
+  :root{
+    --bg:#F4EEDF; --panel:#FCFAF2; --panel-2:#F0E9D6;
+    --ink:#2A2620; --muted:#7C7260; --faint:#A79C86; --line:#DCD1B6;
+    --gold:#B88A2E; --gold-bright:#D9AE47; --green:#4E8368; --ring-track:#DCD1B6;
+    --held:#9A6410; --slipped:#E3D2A4;
+    /* orb ranks: warm metal → premium gems (low → high) */
+    --orb1:#D9A538; --orb2:#B84A54; --orb3:#8A54C9; --orb4:#3E93D6;
+    --shadow:0 1px 2px rgba(42,38,32,.06),0 8px 26px rgba(42,38,32,.07);
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --bg:#10141D; --panel:#191F2C; --panel-2:#141A26;
+      --ink:#ECE5D4; --muted:#948B78; --faint:#6C7488; --line:#303A4C;
+      --gold:#D9AE47; --gold-bright:#F0CC6A; --green:#5FA07E; --ring-track:#2C3549;
+      --held:#EDC257; --slipped:#6F6238;
+      --orb1:#EDBE4E; --orb2:#DB6E78; --orb3:#A87FE8; --orb4:#63B4F0;
+      --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="light"]{
+    --bg:#F4EEDF; --panel:#FCFAF2; --panel-2:#F0E9D6; --ink:#2A2620; --muted:#7C7260; --faint:#A79C86; --line:#DCD1B6;
+    --gold:#B88A2E; --gold-bright:#D9AE47; --green:#4E8368; --ring-track:#DCD1B6;
+    --held:#9A6410; --slipped:#E3D2A4;
+    --orb1:#D9A538; --orb2:#B84A54; --orb3:#8A54C9; --orb4:#3E93D6;
+  }
+  :root[data-theme="dark"]{
+    --bg:#10141D; --panel:#191F2C; --panel-2:#141A26; --ink:#ECE5D4; --muted:#948B78; --faint:#6C7488; --line:#303A4C;
+    --gold:#D9AE47; --gold-bright:#F0CC6A; --green:#5FA07E; --ring-track:#2C3549;
+    --held:#EDC257; --slipped:#6F6238;
+    --orb1:#EDBE4E; --orb2:#DB6E78; --orb3:#A87FE8; --orb4:#63B4F0;
+  }
+  *{box-sizing:border-box}
+  body{margin:0; background:var(--bg); color:var(--ink); font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif; line-height:1.6; -webkit-font-smoothing:antialiased}
+  .wrap{max-width:920px; margin:0 auto; padding:56px 22px 96px}
+  .eyebrow{font-size:.72rem; letter-spacing:.16em; text-transform:uppercase; color:var(--gold); font-weight:600}
+  h1{font-family:Georgia,serif; font-weight:600; font-size:clamp(2rem,5vw,3rem); line-height:1.08; margin:.3em 0 .2em; text-wrap:balance; letter-spacing:-.01em}
+  .lede{font-size:1.1rem; color:var(--muted); max-width:62ch; margin:.4em 0 0}
+  h2{font-family:Georgia,serif; font-weight:600; font-size:1.55rem; margin:0 0 .1em; letter-spacing:-.01em}
+  h3{font-family:Georgia,serif; font-weight:600; font-size:1.14rem; margin:0}
+  p{margin:.6em 0}
+  section{margin-top:56px}
+  .sub{color:var(--muted)}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:.86em; background:var(--panel-2); padding:.08em .38em; border-radius:5px; border:1px solid var(--line)}
+
+  .anatomy{display:flex; gap:30px; align-items:center; flex-wrap:wrap; margin-top:24px; background:var(--panel); border:1px solid var(--line); border-radius:18px; padding:28px; box-shadow:var(--shadow)}
+  .anatomy .big{flex:0 0 auto}
+  .anatomy .legend{flex:1 1 300px; display:flex; flex-direction:column; gap:14px}
+  .anatomy .row{display:flex; gap:12px; align-items:flex-start}
+  .anatomy .sw{width:16px; height:16px; border-radius:50%; flex:0 0 auto; margin-top:3px}
+  .anatomy .swpair{display:flex; gap:3px; flex:0 0 auto; margin-top:3px}
+  .anatomy .swpair span{width:14px; height:16px; border-radius:4px}
+  .anatomy .t{font-weight:600} .anatomy .d{font-size:.86rem; color:var(--muted)}
+  .chips{display:inline-flex; gap:5px; vertical-align:middle; margin-top:3px}
+  .chips span{width:15px; height:15px; border-radius:50%; display:inline-block}
+
+  .ranks{display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-top:20px}
+  @media(max-width:560px){ .ranks{grid-template-columns:repeat(2,1fr)} }
+  .rank{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:16px 10px; text-align:center; box-shadow:var(--shadow)}
+  .rank svg{margin-bottom:6px}
+  .rank .rn{font-family:Georgia,serif; font-weight:600; font-size:1rem}
+  .rank .rd{font-size:.74rem; color:var(--muted)}
+
+  .ladder{display:grid; grid-template-columns:repeat(auto-fill,minmax(102px,1fr)); gap:10px; margin-top:22px}
+  figure{margin:0; background:var(--panel-2); border:1px solid var(--line); border-radius:12px; padding:14px 6px 12px; text-align:center}
+  figure svg{display:block; margin:0 auto 8px}
+  .st-name{font-size:.8rem; font-weight:600}
+  .st-note{font-size:.68rem; color:var(--muted); line-height:1.3; margin-top:2px}
+  .st-note b{color:var(--held); font-weight:700}
+
+  .versrow{display:flex; align-items:center; gap:12px; background:var(--panel-2); border:1px solid var(--line); border-radius:10px; padding:10px 14px; margin-top:18px}
+  .versrow .ref{font-family:Georgia,serif; color:var(--gold); font-size:.8rem; min-width:34px}
+  .versrow .txt{flex:1; font-family:Georgia,serif; font-size:.94rem}
+
+  .reg{display:flex; gap:16px; flex-wrap:wrap; margin-top:18px}
+  .reg figure{flex:1 1 200px}
+  .callout{border-left:3px solid var(--held); background:var(--panel); border-radius:0 12px 12px 0; padding:16px 20px; margin-top:20px}
+  .callout.g{border-left-color:var(--green)} .callout.b{border-left-color:var(--orb4)}
+
+  .cols{display:grid; grid-template-columns:1fr 1fr; gap:10px 24px; margin-top:18px; font-size:.92rem}
+  @media(max-width:560px){ .cols{grid-template-columns:1fr} }
+  .cols .h{font-size:.7rem; letter-spacing:.1em; text-transform:uppercase; font-weight:700; margin-bottom:2px}
+  .cols ul{margin:.1em 0; padding-left:1.1em} .cols li{margin:.2em 0}
+  .win .h{color:var(--green)} .open .h{color:var(--orb3)}
+  .ring.glow{filter:drop-shadow(0 0 4px var(--gold-bright))}
+  .q{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:18px 20px; margin-top:14px}
+  .q .n{font-family:Georgia,serif; color:var(--gold); font-weight:600; margin-right:6px}
+  .foot{margin-top:60px; color:var(--faint); font-size:.82rem; text-align:center}
+  a{color:var(--gold)}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Versekin · mastery ring · ring + orb</div>
+    <h1>Ranking up the long haul.</h1>
+    <p class="lede">The inner ring holds the first six review rungs (1 → 30 days) — a segment <strong>deepens</strong> as you hold it, <strong>fades</strong> if you slip. Past 30 days a centre <strong>orb</strong> takes over and <em>ranks up</em>: warm gold at 60 days, climbing through gem tiers to a diamond capstone at a full year. Borrowed straight from ranked-tier systems.</p>
+  </header>
+
+  <section>
+    <h2>The orb ranks — gold is the floor, gems outrank it</h2>
+    <p class="sub">You were right: gold reads as a mid metal, not the summit. So the orb <em>enters</em> at gold and climbs into the premium gems — the same warm-metal → cool-gem prestige curve League runs (Gold → Platinum → Diamond → Master).</p>
+    <div class="ranks" id="ranks"></div>
+  </section>
+
+  <section>
+    <h2>Anatomy</h2>
+    <div class="anatomy">
+      <div class="big" id="anat"></div>
+      <div class="legend">
+        <div class="row"><span class="sw" style="background:var(--green)"></span><div><div class="t">Outer ring · Familiarization</div><div class="d">the three drill stages — all green = memorized</div></div></div>
+        <div class="row"><span class="swpair"><span style="background:var(--held)"></span><span style="background:var(--slipped)"></span></span><div><div class="t">Inner ring · the building rungs</div><div class="d">six segments = 1 · 2 · 4 · 7 · 14 · 30 days. <b style="color:var(--held)">Deep</b> = held; <b style="color:var(--slipped)">faded</b> = slipped, waiting to be re-earned</div></div></div>
+        <div class="row"><span class="chips" id="orbchips"></span><div><div class="t">Centre orb · the rank</div><div class="d">appears past 30 days, one tier per rung — <span style="color:var(--orb1);font-weight:600">gold 60</span> · <span style="color:var(--orb2);font-weight:600">garnet 120</span> · <span style="color:var(--orb3);font-weight:600">amethyst 240</span> · <span style="color:var(--orb4);font-weight:600">diamond 365</span> (engraved)</div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>The full ladder</h2>
+    <p class="sub">One verse, from first mastery to engraved. The inner ring deepens through the short rungs; then the orb ranks up through the long ones.</p>
+    <div class="ladder" id="ladder"></div>
+    <div class="versrow"><span class="ref">Php 1:6</span><span class="txt">being confident of this very thing…</span><span id="inline"></span></div>
+    <p class="sub" style="font-size:.86rem">Inline in a verse row (26px): the orb’s tier colour reads as a filled centre even when the rungs are too small to count.</p>
+  </section>
+
+  <section>
+    <h2>What we borrowed from ranked tiers</h2>
+    <div class="cols">
+      <div class="win"><div class="h">Principles taken</div><ul>
+        <li><strong>Distinct colour per tier</strong> — a rank is legible at a glance, never a subtle shade-shift</li>
+        <li><strong>Warm metal → cool gem escalation</strong> — gold is the entry floor; the jewels visibly outrank it</li>
+        <li><strong>The peak gets special treatment</strong> — diamond alone earns a sparkle + a warm gold aura (the “Challenger” moment)</li>
+        <li><strong>Shape can escalate too</strong> — the capstone is a sparkle, not just a colour, so the top reads even without hue</li>
+      </ul></div>
+      <div class="open"><div class="h">Deliberately left out</div><ul>
+        <li><strong>No competition.</strong> No leaderboards, no divisions, no “demotion” language — the app is intrinsic-first (P6/P9). This is a private, factual record of how deep a verse is held</li>
+        <li>A slip <strong>fades a rung</strong>, it doesn’t “derank” you with a red warning</li>
+        <li>The earned peak and any badge never regress — the rank shows current durability, the badge shows what you reached</li>
+      </ul></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>A missed recall</h2>
+    <p class="sub">The held rung <strong>fades to a paler tint</strong>; in the orb phase, the rank steps down one gem. Never framed as a loss.</p>
+    <div class="reg" id="reg"></div>
+    <div class="callout b">
+      On the <strong>inner ring</strong>, the rung you couldn’t hold fades lighter and you drop one — “re-earn this one,” never “you lost the verse” (M5: dormant, not lost). In the <strong>orb phase</strong>, a miss steps the rank back one gem (amethyst → garnet) and drops you toward the ring. Peak and badges never regress.
+    </div>
+  </section>
+
+  <section>
+    <h2>What it needs to build</h2>
+    <div class="q"><span class="n">1</span><strong>Extend <code>INTERVALS</code></strong> to <code>[1,2,4,7,14,30,60,120,240,365]</code> — the orb’s four ranks are rungs 6–9.</div>
+    <div class="q"><span class="n">2</span><strong>Per-verse state</strong> — <code>itier</code>/<code>itierPeak</code> plus a light <code>missAt</code> so a slipped rung can fade until re-earned; first-try capture in <code>session.js</code>.</div>
+    <div class="q"><span class="n">3</span><strong>Renderer</strong> — inner 6-segment ring keyed on <code>min(ri,6)</code> (held/slipped tone), centre orb ranked by <code>ri−6</code> (gold→garnet→amethyst→diamond + sparkle). Split at 6 explicit — nothing anchors to <code>INTERVALS.length−1</code>.</div>
+    <div class="q"><span class="n">4</span><strong>Sync</strong> — new fields ride the existing per-verse last-write-wins; <code>review_index</code> already stores <code>ri</code> unbounded, no migration.</div>
+  </section>
+
+  <p class="foot">Live SVG — resize or toggle theme. Rendering mirrors the app’s <code>masteryRing</code>.</p>
+</div>
+
+<script>
+(function(){
+  function P(cx,r,deg){const a=(deg-90)*Math.PI/180;return [cx+r*Math.cos(a), cx+r*Math.sin(a)];}
+  function arc(cx,r,a0,a1){const [x0,y0]=P(cx,r,a0),[x1,y1]=P(cx,r,a1);const lg=(a1-a0)>180?1:0;
+    return `M${x0.toFixed(2)} ${y0.toFixed(2)} A${r} ${r} 0 ${lg} 1 ${x1.toFixed(2)} ${y1.toFixed(2)}`;}
+  function segRing(cx,r,w,n,gap,colorFn){let s='';const step=360/n;
+    for(let i=0;i<n;i++){const a0=i*step+gap/2,a1=(i+1)*step-gap/2,c=colorFn(i);
+      s+=`<path d="${arc(cx,r,a0,a1)}" stroke="${c||'var(--ring-track)'}" stroke-width="${w}" fill="none" stroke-linecap="round"/>`;}
+    return s;}
+  const fam=(s,i)=> s.stage>=3 ? 'var(--green)' : (s.stage>=i+1?'var(--gold)':null);
+  const wrap=(inner,S,glow)=>`<svg class="ring${glow?' glow':''}" width="${S}" height="${S}" viewBox="0 0 ${S} ${S}" role="img">${inner}</svg>`;
+  const ORB=['var(--orb1)','var(--orb2)','var(--orb3)','var(--orb4)'];
+
+  // A ranked gem: filled stone + polished highlight; the top rank (diamond) gets a sparkle burst.
+  function gem(cx,R,color,tier){
+    let s='';
+    if(tier===3){ const p=R*1.75;
+      s+=`<path d="M${cx} ${(cx-p).toFixed(1)} L${(cx+p*0.17).toFixed(1)} ${(cx-p*0.17).toFixed(1)} L${(cx+p).toFixed(1)} ${cx} L${(cx+p*0.17).toFixed(1)} ${(cx+p*0.17).toFixed(1)} L${cx} ${(cx+p).toFixed(1)} L${(cx-p*0.17).toFixed(1)} ${(cx+p*0.17).toFixed(1)} L${(cx-p).toFixed(1)} ${cx} L${(cx-p*0.17).toFixed(1)} ${(cx-p*0.17).toFixed(1)} Z" fill="var(--gold-bright)" opacity="0.85"/>`;
+    }
+    s+=`<circle cx="${cx}" cy="${cx}" r="${R.toFixed(1)}" fill="${color}"/>`;
+    s+=`<circle cx="${(cx-R*0.32).toFixed(1)}" cy="${(cx-R*0.32).toFixed(1)}" r="${(R*0.34).toFixed(1)}" fill="#ffffff" opacity="0.3"/>`;
+    return s;
+  }
+
+  function ring(s,S){
+    const cx=S/2, w=S*0.10, r1=S/2-w*0.7, r2=r1-w*1.7, mem=s.stage>=3, R=S*0.125;
+    let g=segRing(cx,r1,w,3,22,i=>fam(s,i));                       // outer familiarization
+    const lit=Math.min(s.ri,6);
+    g+=segRing(cx,r2,w*0.62,6,20,i=>{                              // inner 6 rungs (1..30d)
+      if(!mem) return null;
+      if(s.missAt===i) return 'var(--slipped)';                    // slipped rung fades lighter
+      return i<lit ? 'var(--held)' : null;                        // held rung deepens
+    });
+    if(mem && s.ri>=6){ const t=Math.min(s.ri-6,3); g+=gem(cx,R,ORB[t],t); }
+    else g+=`<circle cx="${cx}" cy="${cx}" r="${R.toFixed(1)}" fill="transparent" stroke="${mem?'var(--ring-track)':'none'}" stroke-width="1.3"/>`;
+    return wrap(g,S,s.ri>=9);
+  }
+
+  const RANKS=[
+    {n:'Gold', d:'60 days · the floor', s:{stage:3,ri:6}},
+    {n:'Garnet', d:'120 days', s:{stage:3,ri:7}},
+    {n:'Amethyst', d:'240 days', s:{stage:3,ri:8}},
+    {n:'Diamond', d:'365 days · engraved', s:{stage:3,ri:9}},
+  ];
+  const L=[
+    {k:'Learning', s:{stage:2,ri:0}, n:'stage 2'},
+    {k:'Memorized', s:{stage:3,ri:0}, n:'ring empty'},
+    {k:'2 days', s:{stage:3,ri:1}, n:'rung 1'},
+    {k:'1 week', s:{stage:3,ri:3}, n:'rung 3'},
+    {k:'1 month', s:{stage:3,ri:5}, n:'ring full'},
+    {k:'60 days', s:{stage:3,ri:6}, n:'orb · gold'},
+    {k:'120 days', s:{stage:3,ri:7}, n:'orb · garnet'},
+    {k:'240 days', s:{stage:3,ri:8}, n:'orb · amethyst'},
+    {k:'1 year', s:{stage:3,ri:9}, n:'diamond ✦'},
+  ];
+  const REG=[
+    {k:'Slipped at 2 weeks', s:{stage:3,ri:3,missAt:3}, note:'<b>rung fades</b> · drop one'},
+    {k:'Slipped at 240 days', s:{stage:3,ri:7}, note:'rank steps amethyst → garnet'},
+  ];
+
+  function draw(){
+    document.getElementById('ranks').innerHTML=RANKS.map(r=>`<div class="rank">${ring(r.s,72)}<div class="rn">${r.n}</div><div class="rd">${r.d}</div></div>`).join('');
+    document.getElementById('anat').innerHTML=ring({stage:3,ri:8},150);
+    document.getElementById('orbchips').innerHTML=ORB.map(c=>`<span style="background:${c}"></span>`).join('');
+    document.getElementById('ladder').innerHTML=L.map(x=>`<figure>${ring(x.s,84)}<div class="st-name">${x.k}</div><div class="st-note">${x.n}</div></figure>`).join('');
+    document.getElementById('inline').innerHTML=ring({stage:3,ri:8},26);
+    document.getElementById('reg').innerHTML=REG.map(x=>`<figure>${ring(x.s,96)}<div class="st-name">${x.k}</div><div class="st-note">${x.note}</div></figure>`).join('');
+  }
+  draw();
+  new MutationObserver(draw).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+})();
+</script>
